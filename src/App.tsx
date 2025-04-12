@@ -17,27 +17,37 @@ import routerBindings, {
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
 import dataProvider from "@refinedev/simple-rest";
+import { default as simpleRestProvider } from "@refinedev/simple-rest";
+import { axiosInstance } from "./axiosInstance";
 import { App as AntdApp } from "antd";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import { authProvider } from "./authProvider";
 import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import {
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostList,
-  BlogPostShow,
-} from "./pages/blog-posts";
-import {
   CategoryCreate,
   CategoryEdit,
   CategoryList,
   CategoryShow,
 } from "./pages/categories";
-import { ForgotPassword } from "./pages/forgotPassword";
 import { Login } from "./pages/login";
-import { Register } from "./pages/register";
-
+import {
+  ProductList,
+  ProductCreate,
+  ProductEdit,
+  ProductShow,
+} from "./pages/products";
+import {
+  ProductVariantList,
+  ProductVariantCreate,
+  ProductVariantEdit,
+  ProductVariantShow,
+} from "./pages/productsVariant";
+import { OrderEdit, OrderList, OrderShow } from "./pages/orders";
+export const customDataProvider = simpleRestProvider(
+  "http://localhost:2625/api/admin",
+  axiosInstance
+);
 function App() {
   return (
     <BrowserRouter>
@@ -47,21 +57,11 @@ function App() {
           <AntdApp>
             <DevtoolsProvider>
               <Refine
-                dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+                dataProvider={customDataProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerBindings}
                 authProvider={authProvider}
                 resources={[
-                  {
-                    name: "blog_posts",
-                    list: "/blog-posts",
-                    create: "/blog-posts/create",
-                    edit: "/blog-posts/edit/:id",
-                    show: "/blog-posts/show/:id",
-                    meta: {
-                      canDelete: true,
-                    },
-                  },
                   {
                     name: "categories",
                     list: "/categories",
@@ -71,6 +71,32 @@ function App() {
                     meta: {
                       canDelete: true,
                     },
+                  },
+                  {
+                    name: "products",
+                    list: "/products",
+                    create: "/products/create",
+                    edit: "/products/edit/:id",
+                    show: "/products/show/:id",
+                    meta: {
+                      canDelete: true,
+                    },
+                  },
+                  {
+                    name: "product-variants",
+                    list: "/product-variants",
+                    create: "/product-variants/create",
+                    edit: "/product-variants/edit/:id",
+                    show: "/product-variants/show/:id",
+                    meta: {
+                      canDelete: true,
+                    },
+                  },
+                  {
+                    name: "orders",
+                    list: "/orders",
+                    show: "/orders/show/:id",
+                    edit: "/orders/edit/:id",
                   },
                 ]}
                 options={{
@@ -100,17 +126,29 @@ function App() {
                       index
                       element={<NavigateToResource resource="blog_posts" />}
                     />
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
-                      <Route path="create" element={<BlogPostCreate />} />
-                      <Route path="edit/:id" element={<BlogPostEdit />} />
-                      <Route path="show/:id" element={<BlogPostShow />} />
-                    </Route>
+
                     <Route path="/categories">
                       <Route index element={<CategoryList />} />
                       <Route path="create" element={<CategoryCreate />} />
                       <Route path="edit/:id" element={<CategoryEdit />} />
                       <Route path="show/:id" element={<CategoryShow />} />
+                    </Route>
+                    <Route path="/products">
+                      <Route index element={<ProductList />} />
+                      <Route path="create" element={<ProductCreate />} />
+                      <Route path="edit/:id" element={<ProductEdit />} />
+                      <Route path="show/:id" element={<ProductShow />} />
+                    </Route>
+                    <Route path="/product-variants">
+                      <Route index element={<ProductVariantList />} />
+                      <Route path="create" element={<ProductVariantCreate />} />
+                      <Route path="edit/:id" element={<ProductVariantEdit />} />
+                      <Route path="show/:id" element={<ProductVariantShow />} />
+                    </Route>
+                    <Route path="/orders">
+                      <Route index element={<OrderList />} />
+                      <Route path="edit/:id" element={<OrderEdit />} />
+                      <Route path="show/:id" element={<OrderShow />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
@@ -125,11 +163,6 @@ function App() {
                     }
                   >
                     <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route
-                      path="/forgot-password"
-                      element={<ForgotPassword />}
-                    />
                   </Route>
                 </Routes>
 

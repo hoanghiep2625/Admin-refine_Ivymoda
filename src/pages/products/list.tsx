@@ -8,13 +8,12 @@ import {
 import type { BaseRecord } from "@refinedev/core";
 import { Space, Table } from "antd";
 
-export const CategoryList = () => {
+export const ProductList = () => {
   const { tableProps } = useTable({
-    resource: "categories",
+    resource: "products",
     syncWithLocation: true,
   });
 
-  // Nếu API trả về { docs: [], totalDocs: 3, ... }
   const data = (tableProps.dataSource as any)?.docs ?? [];
 
   return (
@@ -24,8 +23,14 @@ export const CategoryList = () => {
         dataSource={Array.isArray(data) ? data : []}
         rowKey="_id"
       >
-        <Table.Column dataIndex="name" title="Tên danh mục" />
-        <Table.Column dataIndex="level" title="Cấp độ" />
+        <Table.Column dataIndex="name" title="Tên sản phẩm" />
+        <Table.Column dataIndex="sku" title="SKU" />
+        <Table.Column
+          dataIndex={["categoryId", "name"]}
+          title="Danh mục"
+          render={(value) => value || "Không xác định"}
+        />
+        <Table.Column dataIndex="shortDescription" title="Mô tả ngắn" />
         <Table.Column
           title="Hành động"
           dataIndex="actions"

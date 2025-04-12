@@ -1,25 +1,36 @@
 import type { AuthProvider } from "@refinedev/core";
+import axios from "axios";
 
-export const TOKEN_KEY = "refine-auth";
+export const TOKEN_KEY = "token";
 
 export const authProvider: AuthProvider = {
-  login: async ({ username, email, password }) => {
-    if ((username || email) && password) {
-      localStorage.setItem(TOKEN_KEY, username);
+  login: async ({ email, password }) => {
+    try {
+      const res = await axios.post("http://localhost:2625/api/auth/login", {
+        email,
+        password,
+      });
+
+      const { token } = res.data.user;
+
+      // Lưu token
+      localStorage.setItem(TOKEN_KEY, token);
+
       return {
         success: true,
         redirectTo: "/",
       };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          name: "LoginError",
+          message: "Email hoặc mật khẩu không chính xác",
+        },
+      };
     }
-
-    return {
-      success: false,
-      error: {
-        name: "LoginError",
-        message: "Invalid username or password",
-      },
-    };
   },
+
   logout: async () => {
     localStorage.removeItem(TOKEN_KEY);
     return {
@@ -27,31 +38,64 @@ export const authProvider: AuthProvider = {
       redirectTo: "/login",
     };
   },
+
   check: async () => {
     const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
+    if (!token) {
       return {
-        authenticated: true,
+        authenticated: false,
+        redirectTo: "/login",
       };
     }
 
-    return {
-      authenticated: false,
-      redirectTo: "/login",
-    };
-  },
-  getPermissions: async () => null,
-  getIdentity: async () => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) {
+    try {
+      await axios.post("http://localhost:2625/api/admin/info", null, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return {
-        id: 1,
-        name: "John Doe",
-        avatar: "https://i.pravatar.cc/300",
+        authenticated: true,
+      };
+    } catch (error) {
+      return {
+        authenticated: false,
+        redirectTo: "/login",
       };
     }
-    return null;
   },
+
+  getIdentity: async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return null;
+
+    try {
+      const res = await axios.post(
+        "http://localhost:2625/api/admin/info",
+        null,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const admin = res.data;
+
+      return {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        avatar: admin.avatar || "https://i.pravatar.cc/300",
+      };
+    } catch {
+      return null;
+    }
+  },
+
+  getPermissions: async () => null,
+
   onError: async (error) => {
     console.error(error);
     return { error };

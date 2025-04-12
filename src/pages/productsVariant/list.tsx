@@ -6,15 +6,14 @@ import {
   useTable,
 } from "@refinedev/antd";
 import type { BaseRecord } from "@refinedev/core";
-import { Space, Table } from "antd";
+import { Space, Table, Image } from "antd";
 
-export const CategoryList = () => {
+export const ProductVariantList = () => {
   const { tableProps } = useTable({
-    resource: "categories",
+    resource: "variants",
     syncWithLocation: true,
   });
 
-  // Nếu API trả về { docs: [], totalDocs: 3, ... }
   const data = (tableProps.dataSource as any)?.docs ?? [];
 
   return (
@@ -24,8 +23,23 @@ export const CategoryList = () => {
         dataSource={Array.isArray(data) ? data : []}
         rowKey="_id"
       >
-        <Table.Column dataIndex="name" title="Tên danh mục" />
-        <Table.Column dataIndex="level" title="Cấp độ" />
+        <Table.Column
+          dataIndex={["productId", "name"]}
+          title="Sản phẩm"
+          render={(value) => value || "Không xác định"}
+        />
+        <Table.Column dataIndex="sku" title="SKU" />
+        <Table.Column
+          dataIndex={["color", "colorName"]}
+          title="Màu"
+          render={(value) => value || "Không xác định"}
+        />
+        <Table.Column dataIndex="price" title="Giá" />
+        <Table.Column
+          dataIndex={["images", "main", "url"]}
+          title="Ảnh chính"
+          render={(value) => <Image src={value} width={50} />}
+        />
         <Table.Column
           title="Hành động"
           dataIndex="actions"
