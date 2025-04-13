@@ -16,7 +16,6 @@ import routerBindings, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
-import dataProvider from "@refinedev/simple-rest";
 import { default as simpleRestProvider } from "@refinedev/simple-rest";
 import { axiosInstance } from "./axiosInstance";
 import { App as AntdApp } from "antd";
@@ -44,8 +43,10 @@ import {
   ProductVariantShow,
 } from "./pages/productsVariant";
 import { OrderEdit, OrderList, OrderShow } from "./pages/orders";
+import { UserEdit, UserList, UserShow } from "./pages/users";
+
 export const customDataProvider = simpleRestProvider(
-  "http://localhost:2625/api/admin",
+  `${import.meta.env.VITE_API_URL}/admin`,
   axiosInstance
 );
 function App() {
@@ -83,11 +84,11 @@ function App() {
                     },
                   },
                   {
-                    name: "product-variants",
-                    list: "/product-variants",
-                    create: "/product-variants/create",
-                    edit: "/product-variants/edit/:id",
-                    show: "/product-variants/show/:id",
+                    name: "variants",
+                    list: "/variants",
+                    create: "/variants/create",
+                    edit: "/variants/edit/:id",
+                    show: "/variants/show/:id",
                     meta: {
                       canDelete: true,
                     },
@@ -97,6 +98,12 @@ function App() {
                     list: "/orders",
                     show: "/orders/show/:id",
                     edit: "/orders/edit/:id",
+                  },
+                  {
+                    name: "users",
+                    list: "/users",
+                    show: "/users/show/:id",
+                    edit: "/users/edit/:id",
                   },
                 ]}
                 options={{
@@ -124,7 +131,7 @@ function App() {
                   >
                     <Route
                       index
-                      element={<NavigateToResource resource="blog_posts" />}
+                      element={<NavigateToResource resource="categories" />}
                     />
 
                     <Route path="/categories">
@@ -139,7 +146,7 @@ function App() {
                       <Route path="edit/:id" element={<ProductEdit />} />
                       <Route path="show/:id" element={<ProductShow />} />
                     </Route>
-                    <Route path="/product-variants">
+                    <Route path="/variants">
                       <Route index element={<ProductVariantList />} />
                       <Route path="create" element={<ProductVariantCreate />} />
                       <Route path="edit/:id" element={<ProductVariantEdit />} />
@@ -149,6 +156,11 @@ function App() {
                       <Route index element={<OrderList />} />
                       <Route path="edit/:id" element={<OrderEdit />} />
                       <Route path="show/:id" element={<OrderShow />} />
+                    </Route>
+                    <Route path="/users">
+                      <Route index element={<UserList />} />
+                      <Route path="show/:id" element={<UserShow />} />
+                      <Route path="edit/:id" element={<UserEdit />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

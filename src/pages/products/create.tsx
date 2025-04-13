@@ -1,9 +1,10 @@
-import { Create, useForm } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import React, { useState, useEffect } from "react";
+import { Create, useForm, useTable } from "@refinedev/antd";
+import { Form, Input, TreeSelect } from "antd";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useEffect } from "react";
 
+// Hàm tạo SKU ngẫu nhiên cho sản phẩm
 const generateSKU = () => {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   return Array.from(
@@ -12,21 +13,51 @@ const generateSKU = () => {
   ).join("");
 };
 
-export const ProductCreate = () => {
+const buildTreeData = (
+  categories: any[],
+  parentId: string | null = null
+): any[] => {
+  const filtered = categories.filter((item) => item.parentId === parentId);
+  return filtered.map((item) => ({
+    title: item.name,
+    value: item._id,
+    key: item._id,
+    children: buildTreeData(categories, item._id),
+  }));
+};
+
+export const ProductCreate: React.FC = () => {
   const { formProps, saveButtonProps } = useForm({
-    resource: "admin/products",
+    resource: "products",
   });
+
+  const { tableProps: categoryTableProps } = useTable({
+    resource: "categories",
+    syncWithLocation: true,
+  });
+
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (categoryTableProps?.dataSource) {
+      const raw = Array.isArray(categoryTableProps.dataSource)
+        ? categoryTableProps.dataSource
+        : (categoryTableProps.dataSource as any)?.docs ?? [];
+      setCategories(raw);
+    }
+  }, [categoryTableProps?.dataSource]);
+
+  const treeData = buildTreeData(categories);
 
   useEffect(() => {
     formProps.form?.setFieldsValue({
       sku: generateSKU(),
     });
-  }, []);
+  }, [formProps.form]);
 
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical">
-        {/* Không hiển thị nhưng vẫn gửi lên */}
         <Form.Item name="sku" hidden>
           <Input />
         </Form.Item>
@@ -36,20 +67,19 @@ export const ProductCreate = () => {
           name="name"
           rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm" }]}
         >
-          <Input />
+          <Input placeholder="Nhập tên sản phẩm" />
         </Form.Item>
 
         <Form.Item
           label="Danh mục"
-          name={["categoryId"]}
+          name="categoryId"
           rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
         >
-          <Select
+          <TreeSelect
+            treeData={treeData}
             placeholder="Chọn danh mục"
-            options={[
-              { label: "Áo sơ mi", value: "67ecff047884e0fcf7e12625" },
-              // thêm danh mục nếu cần
-            ]}
+            allowClear
+            treeDefaultExpandedKeys={[]}
           />
         </Form.Item>
 
@@ -58,7 +88,7 @@ export const ProductCreate = () => {
           name="shortDescription"
           rules={[{ required: true, message: "Vui lòng nhập mô tả ngắn" }]}
         >
-          <Input.TextArea rows={2} />
+          <Input.TextArea rows={2} placeholder="Nhập mô tả ngắn" />
         </Form.Item>
 
         <Form.Item label="Mô tả chi tiết" name="description">

@@ -30,10 +30,27 @@ export const ProductVariantList = () => {
         />
         <Table.Column dataIndex="sku" title="SKU" />
         <Table.Column
-          dataIndex={["color", "colorName"]}
           title="Màu"
-          render={(value) => value || "Không xác định"}
+          render={(_, record) => {
+            const color = record.color || {};
+            return (
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span
+                  style={{
+                    display: "inline-block",
+                    width: 24,
+                    height: 24,
+                    backgroundColor: color.actualColor || "#ccc",
+                    border: "1px solid #ddd",
+                    borderRadius: 2,
+                  }}
+                />
+                <span>{color.colorName || "Không có"}</span>
+              </span>
+            );
+          }}
         />
+
         <Table.Column dataIndex="price" title="Giá" />
         <Table.Column
           dataIndex={["images", "main", "url"]}

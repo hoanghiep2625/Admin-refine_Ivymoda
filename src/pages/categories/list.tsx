@@ -5,8 +5,10 @@ import {
   ShowButton,
   useTable,
 } from "@refinedev/antd";
-import type { BaseRecord } from "@refinedev/core";
-import { Space, Table } from "antd";
+import { Space, Tree, Typography, Drawer } from "antd";
+import { useState, useEffect } from "react";
+
+const { Text } = Typography;
 
 export const CategoryList = () => {
   const { tableProps } = useTable({
@@ -14,30 +16,86 @@ export const CategoryList = () => {
     syncWithLocation: true,
   });
 
-  // Nếu API trả về { docs: [], totalDocs: 3, ... }
-  const data = (tableProps.dataSource as any)?.docs ?? [];
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (tableProps?.dataSource) {
+      const response = tableProps.dataSource as unknown as { docs: any[] };
+      const rawData = Array.isArray(response.docs) ? response.docs : [];
+      setData(rawData);
+    }
+  }, [tableProps?.dataSource]);
+
+  const categoryMap = new Map(data.map((cat: any) => [cat._id, cat.name]));
+
+  const generateTreeData = (
+    items: any[],
+    parentId: string | null = null
+  ): any[] => {
+    return items
+      .filter((item) => item.parentId === parentId)
+      .map((item) => ({
+        title: item.name,
+        key: item._id,
+        value: item._id,
+        children: generateTreeData(items, item._id),
+      }));
+  };
+
+  const handleSelectCategory = (selectedKeys: React.Key[]) => {
+    const selectedId = selectedKeys[0] as string;
+    setSelectedCategoryId(selectedId);
+    setDrawerVisible(true);
+  };
+
+  const handleCloseDrawer = () => {
+    setDrawerVisible(false);
+    setSelectedCategoryId(null);
+  };
 
   return (
-    <List>
-      <Table
-        {...tableProps}
-        dataSource={Array.isArray(data) ? data : []}
-        rowKey="_id"
-      >
-        <Table.Column dataIndex="name" title="Tên danh mục" />
-        <Table.Column dataIndex="level" title="Cấp độ" />
-        <Table.Column
-          title="Hành động"
-          dataIndex="actions"
-          render={(_, record: BaseRecord) => (
-            <Space>
-              <EditButton hideText size="small" recordItemId={record._id} />
-              <ShowButton hideText size="small" recordItemId={record._id} />
-              <DeleteButton hideText size="small" recordItemId={record._id} />
-            </Space>
-          )}
-        />
-      </Table>
+    <List title="Danh sách danh mục">
+      <Tree
+        treeData={generateTreeData(data)}
+        defaultExpandAll
+        onSelect={handleSelectCategory}
+        expandedKeys={expandedKeys}
+        onExpand={(keys) => setExpandedKeys(keys as string[])}
+      />
+
+      {selectedCategoryId && (
+        <Drawer
+          title="Chi tiết danh mục"
+          open={drawerVisible}
+          onClose={handleCloseDrawer}
+          width={400}
+        >
+          <Text strong>Chi tiết danh mục:</Text>
+          <p>Tên: {categoryMap.get(selectedCategoryId)}</p>
+          <Space>
+            <EditButton
+              hideText
+              size="small"
+              recordItemId={selectedCategoryId}
+            />
+            <ShowButton
+              hideText
+              size="small"
+              recordItemId={selectedCategoryId}
+            />
+            <DeleteButton
+              hideText
+              size="small"
+              recordItemId={selectedCategoryId}
+            />
+          </Space>
+        </Drawer>
+      )}
     </List>
   );
 };

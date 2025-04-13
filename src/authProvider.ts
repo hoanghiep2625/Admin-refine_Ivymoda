@@ -6,14 +6,15 @@ export const TOKEN_KEY = "token";
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
     try {
-      const res = await axios.post("http://localhost:2625/api/auth/login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        {
+          email,
+          password,
+        }
+      );
 
       const { token } = res.data.user;
-
-      // Lưu token
       localStorage.setItem(TOKEN_KEY, token);
 
       return {
@@ -49,7 +50,7 @@ export const authProvider: AuthProvider = {
     }
 
     try {
-      await axios.post("http://localhost:2625/api/admin/info", null, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/admin/info`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -72,7 +73,7 @@ export const authProvider: AuthProvider = {
 
     try {
       const res = await axios.post(
-        "http://localhost:2625/api/admin/info",
+        `${import.meta.env.VITE_API_URL}/admin/info`,
         null,
         {
           headers: {

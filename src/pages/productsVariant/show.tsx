@@ -5,7 +5,7 @@ import { Card, Row, Col, Typography, Image } from "antd";
 const { Title, Text } = Typography;
 
 export const ProductVariantShow = () => {
-  const { queryResult } = useShow({ resource: "product-variants" });
+  const { queryResult } = useShow({ resource: "variants" });
   const { data, isLoading } = queryResult;
   const record = data?.data;
 
@@ -70,7 +70,6 @@ export const ProductVariantShow = () => {
                         border: "1px solid #ccc",
                         padding: "8px",
                         textAlign: "center",
-                        backgroundColor: "#f5f5f5",
                       }}
                     >
                       {s.size}
