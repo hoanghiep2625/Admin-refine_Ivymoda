@@ -44,6 +44,7 @@ import {
 } from "./pages/productsVariant";
 import { OrderEdit, OrderList, OrderShow } from "./pages/orders";
 import { UserEdit, UserList, UserShow } from "./pages/users";
+import StatsDashboard from "./pages/stats/dashboard";
 
 export const customDataProvider = simpleRestProvider(
   `${import.meta.env.VITE_API_URL}/admin`,
@@ -63,6 +64,13 @@ function App() {
                 routerProvider={routerBindings}
                 authProvider={authProvider}
                 resources={[
+                  {
+                    name: "stats",
+                    list: "/stats",
+                    meta: {
+                      label: "Dashboard",
+                    },
+                  },
                   {
                     name: "categories",
                     list: "/categories",
@@ -133,7 +141,9 @@ function App() {
                       index
                       element={<NavigateToResource resource="categories" />}
                     />
-
+                    <Route path="/stats">
+                      <Route index element={<StatsDashboard />} />
+                    </Route>
                     <Route path="/categories">
                       <Route index element={<CategoryList />} />
                       <Route path="create" element={<CategoryCreate />} />

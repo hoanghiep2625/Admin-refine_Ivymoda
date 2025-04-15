@@ -1,6 +1,34 @@
 import { Show } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
-import { Typography, Descriptions, Image } from "antd";
+import { Typography, Descriptions, Tag, Image } from "antd";
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "Chờ xác nhận":
+      return "orange";
+    case "Đã xác nhận":
+      return "blue";
+    case "Người bán huỷ":
+      return "red";
+    case "Người mua huỷ":
+      return "red";
+    case "Đang giao hàng":
+      return "cyan";
+    case "Giao hàng thành công":
+      return "green";
+    case "Giao hàng thất bại":
+      return "volcano";
+    case "Chờ thanh toán":
+      return "gold";
+    case "Đã thanh toán":
+      return "purple";
+    case "Huỷ do quá thời gian thanh toán":
+      return "magenta";
+    default:
+      console.warn("Trạng thái không xác định:", status);
+      return "default";
+  }
+};
 
 export const OrderShow = () => {
   const { queryResult } = useShow({
@@ -33,7 +61,9 @@ export const OrderShow = () => {
           {record?.paymentMethod}
         </Descriptions.Item>
         <Descriptions.Item label="Trạng thái đơn hàng">
-          {record?.status}
+          <Tag color={getStatusColor(record?.status || "default")}>
+            {record?.status || "Không xác định"}
+          </Tag>
         </Descriptions.Item>
         <Descriptions.Item label="Tổng tiền">
           {record?.totalAmount?.toLocaleString()}đ
