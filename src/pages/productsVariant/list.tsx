@@ -14,7 +14,7 @@ export const ProductVariantList = () => {
     syncWithLocation: true,
   });
 
-  const data = (tableProps.dataSource as any)?.docs ?? [];
+  const data = (tableProps.dataSource as any)?.data ?? [];
 
   return (
     <List>

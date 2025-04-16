@@ -1,6 +1,6 @@
-// src/pages/orders/list.tsx
 import { List, useTable, DateField, ShowButton } from "@refinedev/antd";
 import { Table, Tag } from "antd";
+import { log } from "console";
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -9,7 +9,6 @@ const getStatusColor = (status: string) => {
     case "Đã xác nhận":
       return "blue";
     case "Người bán huỷ":
-      return "red";
     case "Người mua huỷ":
       return "red";
     case "Đang giao hàng":
@@ -30,29 +29,13 @@ const getStatusColor = (status: string) => {
   }
 };
 
-interface Order {
-  _id: string;
-  user: { name: string; phone: string };
-  totalAmount: number;
-  status: string;
-  createdAt: string;
-}
-
-interface OrdersResponse {
-  orders: Order[];
-}
-
 export const OrderList = () => {
-  const { tableProps } = useTable<OrdersResponse>({
+  const { tableProps } = useTable({
     resource: "orders",
     syncWithLocation: true,
   });
 
-  // Trích xuất mảng orders từ dữ liệu API
-  const data = Array.isArray(tableProps.dataSource?.orders)
-    ? tableProps.dataSource.orders
-    : [];
-  console.log("🚀 ~ OrderList ~ data:", data);
+  const data = (tableProps.dataSource as any)?.data ?? [];
 
   return (
     <List>

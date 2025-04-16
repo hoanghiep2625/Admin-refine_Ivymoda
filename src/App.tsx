@@ -53,7 +53,7 @@ export const customDataProvider = simpleRestProvider(
 function App() {
   return (
     <BrowserRouter>
-      <GitHubBanner />
+      {/* <GitHubBanner /> */}
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <AntdApp>

@@ -21,17 +21,21 @@ export const CategoryList = () => {
     null
   );
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-  const [data, setData] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
-    if (tableProps?.dataSource) {
-      const response = tableProps.dataSource as unknown as { docs: any[] };
-      const rawData = Array.isArray(response.docs) ? response.docs : [];
-      setData(rawData);
+    const response = tableProps?.dataSource as any;
+    if (response?.data && Array.isArray(response.data)) {
+      setCategories(response.data);
+    } else if (Array.isArray(response)) {
+      // fallback nếu refine không bao data mà trả mảng luôn
+      setCategories(response);
     }
   }, [tableProps?.dataSource]);
 
-  const categoryMap = new Map(data.map((cat: any) => [cat._id, cat.name]));
+  const categoryMap = new Map(
+    categories.map((cat: any) => [cat._id, cat.name])
+  );
 
   const generateTreeData = (
     items: any[],
@@ -61,7 +65,7 @@ export const CategoryList = () => {
   return (
     <List title="Danh sách danh mục">
       <Tree
-        treeData={generateTreeData(data)}
+        treeData={generateTreeData(categories)}
         defaultExpandAll
         onSelect={handleSelectCategory}
         expandedKeys={expandedKeys}
