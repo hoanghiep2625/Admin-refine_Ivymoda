@@ -41,7 +41,7 @@ export const ProductEdit = () => {
   useEffect(() => {
     const raw = Array.isArray(categoryTableProps.dataSource)
       ? categoryTableProps.dataSource
-      : (categoryTableProps.dataSource as any)?.docs ?? [];
+      : (categoryTableProps.dataSource as any)?.data ?? [];
 
     const tree = buildTreeData(raw);
     setTreeData(tree);

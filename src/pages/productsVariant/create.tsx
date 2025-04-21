@@ -43,7 +43,7 @@ interface FormValues {
 }
 interface ProductApiResponse {
   data: {
-    docs: Product[];
+    data: Product[];
   };
 }
 export const ProductVariantCreate = () => {
@@ -54,12 +54,12 @@ export const ProductVariantCreate = () => {
     optionLabel: "name",
     optionValue: "_id",
     meta: {
-      select: (rawData: ProductApiResponse) => rawData.data.docs,
+      select: (rawData: ProductApiResponse) => rawData.data.data,
     },
   });
 
   const products =
-    (queryResult?.data?.data as ProductApiResponse["data"] | undefined)?.docs ||
+    (queryResult?.data?.data as ProductApiResponse["data"] | undefined)?.data ||
     [];
   const [mainImage, setMainImage] = useState<UploadFile[]>([]);
   const [hoverImage, setHoverImage] = useState<UploadFile[]>([]);

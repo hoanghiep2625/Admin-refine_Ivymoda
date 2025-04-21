@@ -35,7 +35,7 @@ export const CategoryCreate: React.FC = () => {
   useEffect(() => {
     const raw = Array.isArray(tableProps.dataSource)
       ? tableProps.dataSource
-      : (tableProps.dataSource as any)?.docs ?? [];
+      : (tableProps.dataSource as any)?.data ?? [];
 
     setCategories(raw);
     setTreeData(buildTreeData(raw));
