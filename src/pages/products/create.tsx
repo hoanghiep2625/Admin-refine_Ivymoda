@@ -42,7 +42,7 @@ export const ProductCreate: React.FC = () => {
     if (categoryTableProps?.dataSource) {
       const raw = Array.isArray(categoryTableProps.dataSource)
         ? categoryTableProps.dataSource
-        : (categoryTableProps.dataSource as any)?.docs ?? [];
+        : (categoryTableProps.dataSource as any)?.data ?? [];
       setCategories(raw);
     }
   }, [categoryTableProps?.dataSource]);
