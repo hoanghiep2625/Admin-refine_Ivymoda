@@ -37,7 +37,7 @@
   "scripts": {
     "dev": "refine dev",
     "build": "tsc && refine build",
-    "start": "refine start",
+    "start": "vite",
     "refine": "refine"
   },
   "browserslist": {
